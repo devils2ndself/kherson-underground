@@ -17,11 +17,17 @@ app.get('/', (req, res) => {
 
 app.get('/api/charities', (req, res) => {
     mongoService.getAllCharities().then((data) => {
-        
+
         res.json({message: 'In progress'});
     })
 })
 
-app.listen(port, () => {
-    console.log('App listening on port:', port)
-})
+mongoService.connectMongo()
+    .then(()=> {
+            app.listen(port, () => {
+                console.log('App listening on port:', port)
+            })
+    })
+    .catch(err => {
+        console.log('Error connecting to the DB!')
+    })

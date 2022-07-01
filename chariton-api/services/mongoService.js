@@ -1,4 +1,12 @@
-const mongodb = require('mongodb')
+const mongodb = require('mongodb');
+require('dotenv').config();
+
+function connectMongo() {
+    return new Promise((resolve, reject) => {
+        // mongodb.connect(process.env.DB_CON_STR).then()
+        resolve()
+    })
+}
 
 function getAllCharities() {
     return new Promise((resolve, reject) => {
@@ -7,5 +15,6 @@ function getAllCharities() {
 }
 
 module.exports = {
+    connectMongo,
     getAllCharities
 }
