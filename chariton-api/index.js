@@ -12,22 +12,34 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/', (req, res) => {
-    res.json({message: 'API is working properly.'});
+    res.json({
+        message: 'API is working properly.'
+    });
 })
 
-app.get('/api/charities', (req, res) => {
-    mongoService.getAllCharities().then((data) => {
+app.get('/api/rentals', (req, res) => {
+    mongoService.getAllRentals().then((data) => {
 
-        res.json({message: 'In progress'});
+        res.json(data);
+    }).catch(err => {
+        console.log(err);
+        res.status(500).json(err);
     })
 })
+
+// app.get('/api/rentals', (req, res) => {
+//     mongoService.getAllRentals().then((data) => {
+
+//         res.json(data);
+//     })
+// })
 
 mongoService.connectMongo()
-    .then(()=> {
-            app.listen(port, () => {
-                console.log('App listening on port:', port)
-            })
+    .then(() => {
+        app.listen(port, () => {
+            console.log('App listening on port:', port)
+        })
     })
     .catch(err => {
-        console.log('Error connecting to the DB!')
+        console.log(err)
     })
