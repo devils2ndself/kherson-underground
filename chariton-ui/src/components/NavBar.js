@@ -24,7 +24,7 @@ const NavBar = () => {
   return (
       <AppBar component="nav" position='fixed' style={{zIndex: 999}}>
         <Toolbar>
-          <Avatar alt="Cindy Baker" src={Misha} style={{marginRight: 30, width: 60, height: 60}}/>
+          <Avatar alt="Cindy Baker" src={Misha} style={{marginRight: 30, width: 50, height: 50}}/>
           <Typography
             variant="h6"
             component="div"
