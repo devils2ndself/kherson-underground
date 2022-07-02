@@ -1,49 +1,89 @@
-import React from 'react';
+import _ from 'lodash';
+import React, { useEffect } from 'react';
 import { Box, Card, Typography, Button, CardMedia, CardContent, CardActions, Grid } from '@mui/material';
-import scooterBolt from '../assets/scooter_bolt.jpg';
+import scooter from '../assets/scooter.jpg';
+import bike from '../assets/bike.jpg';
 
-const OrderForm = () => {
+const OrderForm = ({ selectedRental }) => {
+    useEffect(() => {
+        console.log('Selected rental: ', selectedRental)
+    }, [])
+
     return (
-        <Card 
-            style={{ height: '100%', width: '100%'}}
-            // sx={{
-            //     // backgroundColor: '#1976d2',
-            //     border: '2px solid #1976d2',
-            //     width: 100,
-            //     height: 100,
-            // }}
-        >
-            <CardMedia
-                component="img"
-                height="300"
-                image={scooterBolt}
-                alt="green iguana"
-            />
+        <Card style={{ height: '100%', width: '100%'}}>
 
-            <CardContent>
-                
-                <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                    <Typography gutterBottom variant="h5" component="div">
-                            Bolt Scooter
+            { selectedRental._id !== '00' ?
+
+                <div>
+                    { selectedRental.type === 'scooter' ?
+                        <CardMedia
+                            component="img"
+                            height="300"
+                            image={scooter}
+                            alt="scooter"
+                        />
+                        :
+                        <CardMedia
+                            component="img"
+                            height="300"
+                            image={bike}
+                            alt="bike"
+                        />
+                    }
+
+                    <CardContent>
+                        <Grid container spacing={2}>
+                            <Grid item xs={6}>
+                            <Typography gutterBottom variant="h5" component="div">
+                                    {_.toUpper(selectedRental.type)}
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Typography gutterBottom variant="h5" component="div">
+                                    {selectedRental.tariff} per min
+                                </Typography>
+                            </Grid>
+                        </Grid>
+                        
+                        { selectedRental.type === 'scooter' ?
+                            <Typography variant="body2" color="text.secondary">
+                                Battery: {selectedRental.battery}%
+                            </Typography>
+                            :
+                            <Typography variant="body2" color="text.secondary">
+                                  
+                            </Typography>
+                        }
+
+                        <Typography variant="body2" color="text.secondary">
+                            {selectedRental.location.lat} : {selectedRental.location.lng}
                         </Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                        <Typography gutterBottom variant="h5" component="div">
-                            1$ per min
-                        </Typography>
-                    </Grid>
-                </Grid>
-                    
-                <Typography variant="body2" color="text.secondary">
-                    Best scooter you ever seen
-                </Typography>
-            </CardContent>
-            <CardActions>
-                <Button variant="outline" size="small" color="secondary" disabled>Book</Button>
-                <Button variant="contained" color="success">Start ride</Button>
-                <Button variant="contained" color="error">End ride</Button>
-            </CardActions>
+
+                    </CardContent>
+                    { selectedRental.inUse ? 
+                        <CardActions>
+                            <Button variant="contained" disabled>Book</Button>
+                            <Button variant="contained" color="success" disabled>Start ride</Button>
+                            <Button variant="contained" color="error" disabled>End ride</Button>
+                        </CardActions>
+                        :
+                        <CardActions>
+                            <Button variant="contained">Book</Button>
+                            <Button variant="contained" color="success">Start ride</Button>
+                            <Button variant="contained" color="error">End ride</Button>
+                        </CardActions>
+                    }
+                </div>
+
+                :
+
+                <div>
+                    <Typography style={{marginTop: '60%', textAlign: 'center'}}>
+                        Select vehicle
+                    </Typography>
+                </div>
+            }
+
         </Card>
     );
 };

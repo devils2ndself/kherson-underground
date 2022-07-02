@@ -1,13 +1,12 @@
 import React from 'react';
-import { Container, Typography, Box } from '@mui/material'
+import { Container, Typography, Box, Button, AppBar, Toolbar } from '@mui/material'
 
 const MainPage = () => {
+    
     return (
-        <Box style={{marginTop: 50}} component="main" sx={{ p: 3 }} >
-            <Typography>
-                Info about RenTOP
-            </Typography>
-        </Box>
+        <AppBar component="main" position='fixed' style={{marginTop: 50, height: '100%', zIndex: -1}}>
+            
+        </AppBar>
     );
 };
 

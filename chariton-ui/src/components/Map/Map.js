@@ -1,49 +1,72 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, useMap, Popup, Marker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import './Map.module.css';
-import { Button, Grid, Box, Item, getLinearProgressUtilityClass } from '@mui/material';
-import { bind } from 'leaflet';
+import { Button, Grid, Box, Item, Card } from '@mui/material';
+import L, { bind, svg } from 'leaflet';
+import Scooter from '../../assets/scooterIcon.png';
+import Bike from '../../assets/bikeIcon.png';
+import AccessibleIcon from '@mui/icons-material/Accessible';
 
-const Map = () => {
-  const [isRiding, setIsRiding] = useState(false);
-
-  const scooters = [
-    {
-      id: 1,
-      name: 'first',
-      position: [50.450001, 30.523333],
-    },
-    {
-      id: 2,
-      name: 'second',
-      position: [50.4501, 30.524],
-    },
-  ];
+const Map = ({rentals, setSelectedRental}) => {
+  useEffect(() => {
+    // console.log(rentals);
+  })
 
   const getInfo = (scooter) => {
     console.log(scooter);
   };
 
+  const GetIcon = (iconSize, iconString) => {
+    return L.icon({
+      iconUrl: require(iconString),
+      iconSize
+    })
+  }
+
+  const ScooterIcon = new L.Icon({
+    iconUrl: Scooter,
+    iconSize: [30, 30],
+  });
+
+  const BikeIcon = new L.Icon({
+    iconUrl: Bike,
+    iconSize: [30, 30],
+  });
+
+  const whichIcon = (rental) => {
+    if (rental.type === 'scooter') {
+      return ScooterIcon;
+    }
+    return BikeIcon;
+  }
+
   return (
-        <MapContainer
+    <Card style={{ height: '100%', width: '100%'}}>
+    <MapContainer
             center={[50.450001, 30.523333]}
             zoom={13}
             scrollWheelZoom={true}
             style={{ width: '100%', height: '85vh' }}
         >
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-            {scooters.map((scooter) => (
-                <Marker position={scooter.position} key={scooter.id} 
-                    eventHandlers={{
-                        click: () => getInfo(scooter),
-                  }}>
-                {/* <Popup>
-                    <Button onClick={() => getInfo(scooter)}>Start ride</Button>
-                </Popup> */}
+            {rentals.map((rental) => (
+                <Marker
+                  icon={whichIcon(rental)}
+                  position={rental.location} 
+                  key={rental._id} 
+                  eventHandlers={{
+                    click: () => { 
+                      getInfo(rental)
+                      setSelectedRental(rental)
+                    },
+                  }}
+                >
+                  
                 </Marker>
             ))}
         </MapContainer>
+        </Card>
   );
 };
 
