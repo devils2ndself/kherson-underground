@@ -51,7 +51,7 @@ app.get('/api/previousRides', (req, res) => {
 //     })
 // })
 
-app.get('/api/rentals/:id', (req, res) => {
+app.get('/api/rentals/:id', async (req, res) => {
     const exRate = await convert.convert();
     mongoService.getRentalById(req.params.id).then(async (data) => {
         data.tariff = (element.tariff * exRate).toFixed(2);
