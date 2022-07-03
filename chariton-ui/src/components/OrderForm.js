@@ -16,15 +16,13 @@ const RentalStatuses = {
 const OrderForm = ({ selectedRental, setSelectedRental, setIsSelectedMap, setSelectedMap }) => {
     const [ rentalStatus, setRentalStatus ] = useState(RentalStatuses.NONE);
     const [ time, setTime ] = useState(0);
-    const [ isActive, setIsActive ] = useState(false);
-    const [ isStarted, setIsStarted ] = useState(false);
     let totalSeconds = 0;
     let timer = useRef(null);
 
     useEffect(() => {
         // console.log('Selected rental: ', selectedRental)
-        setIsActive(getIsActive());
-        console.log(isActive)
+        // setIsActive(getIsActive());
+        // console.log(isActive)
     }, []);
 
     const plusSecond = () => {
@@ -39,22 +37,6 @@ const OrderForm = ({ selectedRental, setSelectedRental, setIsSelectedMap, setSel
         totalSeconds = 0;
         const callback = plusSecond;
         timer = setInterval(callback, 1000);
-    }
-
-    const updateStartApi = (id) => {
-        if (isStarted) {
-            return;
-        }
-        setIsStarted(true);
-        return updateStart(id);
-    }
-
-    const updateStopApi = (id, totalSeconds) => {
-        if (!isStarted) {
-            return;
-        }
-        setIsStarted(false);
-        return updateStop(id, totalSeconds);
     }
 
     const changeRentalStatus = (status) => {
