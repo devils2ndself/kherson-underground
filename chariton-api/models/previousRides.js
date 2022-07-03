@@ -2,11 +2,10 @@ const mongoose = require("mongoose");
 
 const PreviousRidesSchema = new mongoose.Schema({
     startDate: {
-        type: String
+        type: String,
     },
     time: {
-        type: Date,
-        default: Date.now
+        type: Number
     },
     totalAmount: {
         type: Number
