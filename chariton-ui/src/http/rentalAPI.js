@@ -12,8 +12,8 @@ export const getIsActive = async () => {
     return data;
 }
 
-export const updateStop = async (id, totalSeconds) => {
-    const { data } = await $host.post('api/stop', { id, totalSeconds })
+export const updateStop = async (id, time) => {
+    const { data } = await $host.post('api/stop', { id, time })
     return data;
 }
 

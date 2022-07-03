@@ -16,7 +16,8 @@ const RentalStatuses = {
 const OrderForm = ({ selectedRental, setSelectedRental, setIsSelectedMap, setSelectedMap }) => {
     const [ rentalStatus, setRentalStatus ] = useState(RentalStatuses.NONE);
     const [ time, setTime ] = useState(0);
-    const [ isActive, setIsActive ] = useState(true);
+    const [ isActive, setIsActive ] = useState(false);
+    const [ isStarted, setIsStarted ] = useState(false);
     let totalSeconds = 0;
     let timer = useRef(null);
 
@@ -36,6 +37,22 @@ const OrderForm = ({ selectedRental, setSelectedRental, setIsSelectedMap, setSel
         totalSeconds = 0;
         const callback = plusSecond;
         timer = setInterval(callback, 1000);
+    }
+
+    const updateStartApi = (id) => {
+        if (isStarted) {
+            return;
+        }
+        setIsStarted(true);
+        return updateStart(id);
+    }
+
+    const updateStopApi = (id, totalSeconds) => {
+        if (!isStarted) {
+            return;
+        }
+        setIsStarted(false);
+        return updateStop(id, totalSeconds);
     }
 
     const changeRentalStatus = (status) => {
@@ -177,9 +194,8 @@ const OrderForm = ({ selectedRental, setSelectedRental, setIsSelectedMap, setSel
                         :
                         rentalStatus === RentalStatuses.NONE ?
                             <CardActions>
-                                <Button style={{width: '33%'}} variant="contained" onClick={() => { changeRentalStatus(RentalStatuses.BOOKED); startTimer(); }}>Hold</Button>
-                                {/* <Button style={{width: '33%'}} variant="contained" color="success" onClick={() => { changeRentalStatus(RentalStatuses.STARTED); startTimer(); }} >Start ride</Button> */}
-                                <Button style={{width: '33%'}} variant="contained" color="success" onClick={() => { updateStart(selectedRental._id) }} >Start ride</Button>
+                                <Button style={{width: '33%'}} variant="contained" onClick={() => { updateStartApi(selectedRental._id); changeRentalStatus(RentalStatuses.BOOKED); startTimer(); }}>Hold</Button>
+                                <Button style={{width: '33%'}} variant="contained" color="success" onClick={() => { updateStartApi(selectedRental._id); changeRentalStatus(RentalStatuses.STARTED); startTimer(); }} >Start ride</Button>
                                 <Button style={{width: '33%'}} variant="contained" color="error" disabled >End ride</Button>
                             </CardActions>
                             :
@@ -187,20 +203,20 @@ const OrderForm = ({ selectedRental, setSelectedRental, setIsSelectedMap, setSel
                                 <CardActions>
                                     <Button style={{width: '33%'}} variant="contained" disabled >Hold</Button>
                                     <Button style={{width: '33%'}} variant="contained" color="success" onClick={() => changeRentalStatus(RentalStatuses.STARTED)} >Start ride</Button> {/* не нужно перезапускать таймер */}
-                                    <Button style={{width: '33%'}} variant="contained" color="error" onClick={() => { totalSeconds = time; changeRentalStatus(RentalStatuses.ENDED); }} >End ride</Button>
+                                    <Button style={{width: '33%'}} variant="contained" color="error" onClick={() => { totalSeconds = time; updateStopApi(selectedRental._id, totalSeconds); changeRentalStatus(RentalStatuses.ENDED); }} >End ride</Button>
                                 </CardActions>
                                 :
                                 rentalStatus === RentalStatuses.STARTED ?
                                     <CardActions>   
                                         <Button style={{width: '33%'}} variant="contained" disabled >Hold</Button>
                                         <Button style={{width: '33%'}} variant="contained" color="success" disabled >Start ride</Button>
-                                        <Button style={{width: '33%'}} variant="contained" color="error" onClick={() => { totalSeconds = time; changeRentalStatus(RentalStatuses.ENDED); }}>End ride</Button>
+                                        <Button style={{width: '33%'}} variant="contained" color="error" onClick={() => { totalSeconds = time; updateStopApi(selectedRental._id, totalSeconds); changeRentalStatus(RentalStatuses.ENDED); }}>End ride</Button>
                                     </CardActions>
                                     :
                                     rentalStatus === RentalStatuses.ENDED &&
                                         <CardActions>   
-                                            <Button style={{width: '33%'}} variant="contained" onClick={() => { changeRentalStatus(RentalStatuses.BOOKED); startTimer(); }} >Hold</Button>
-                                            <Button style={{width: '33%'}} variant="contained" color="success" onClick={() => { changeRentalStatus(RentalStatuses.STARTED); startTimer();}} >Start ride</Button>
+                                            <Button style={{width: '33%'}} variant="contained" onClick={() => { updateStartApi(selectedRental._id); changeRentalStatus(RentalStatuses.BOOKED); startTimer(); }} >Hold</Button>
+                                            <Button style={{width: '33%'}} variant="contained" color="success" onClick={() => { updateStartApi(selectedRental._id); changeRentalStatus(RentalStatuses.STARTED); startTimer();}} >Start ride</Button>
                                             <Button style={{width: '33%'}} variant="contained" color="error" disabled >End ride</Button>
                                         </CardActions>
                         :

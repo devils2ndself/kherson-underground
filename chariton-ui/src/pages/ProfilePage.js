@@ -33,7 +33,7 @@ const ProfilePage = () => {
                     </Typography>
                     
                     {previousRides.map((prevRide) =>
-                        <div style={{marginTop: 30}} key={prevRide._id}>
+                        <div style={{marginTop: 10}} key={prevRide._id}>
                             <Typography>
                                 Date: {prevRide.startDate} | Type: {prevRide.type} | Price: {prevRide.totalAmount} TON | Id: {prevRide._id} 
                             </Typography>
