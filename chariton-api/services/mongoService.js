@@ -28,17 +28,32 @@ async function getAllRentals() {
     })
 }
 
-function getRentalById(params) {
-    return new Promise((resolve, reject) => {
-        Rentals.findOne({
-            _id: id
-        }).then(data => resolve(data)).catch(err => reject(err));
-        resolve();
-    });
+async function getRentalById(params) {
+
+
+    try {
+        return await Rentals.findById(params);
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
 
 }
+// async function getRentalByName(params) {
+
+//     try {
+//         return await Rentals.findOne({
+//             type: params
+//         });
+//     } catch (err) {
+//         console.log(err);
+//         return null;
+//     }
+
+// }
 
 function addPreviousRide(params) {
+
     return new Promise((resolve, reject) => {
         PreviousRides(params).save().then();
         resolve();
@@ -46,22 +61,15 @@ function addPreviousRide(params) {
 
 }
 
-function getAllPopular(params) {
-
-}
-
-function getAllClose(params) {
-
-}
-
-function getBySearch(params) {
-
-}
-
-function getAllTotalDonated(params) {
-
+function getAllPreviousRides() {
+    return new Promise((resolve, reject) => {
+        PreviousRides.find().then(data => resolve(data)).catch(err => reject(err));
+    })
 }
 module.exports = {
     connectMongo,
-    getAllRentals
+    getAllRentals,
+    getRentalById,
+    getAllPreviousRides,
+    addPreviousRide
 }
