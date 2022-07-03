@@ -394,18 +394,43 @@ class TonService {
     }
 }
 
+// USAGE
+
+/*
+// make instance 
 const t = new TonService();
+
+// initialize wallets
 t.initWallets().then(() => {
+
+    //starting the channel
     t.startChannel().then(() => {
+        
         console.log('Channel started.')
+
+        //transferring 1 ton off-chain
         t.pay(1).then(() => {
+
             console.log('Paid 1')
+
+            //transferring 0.5 ton off-chain
             t.pay(0.5).then(() => {
+
                 console.log('Paid 0.5')
+
+                //closing channel and distributing money
                 t.closeChannel().then(() => {
+                    
                     console.log('Channel closed.')
+
+                }).catch(err => {
+                    console.log('error...\n\n', err)
                 })
+
+            }).catch(err => {
+                console.log('error...\n\n', err)
             })
+
         }).catch(err => {
             console.log('error...\n\n', err)
         })
@@ -413,7 +438,10 @@ t.initWallets().then(() => {
     }).catch(err => {
         console.log('error...\n\n', err)
     })
+
+    // get user balance
     // t.getBalance().then(balance => console.log(balance))
 })
+*/
 
 module.exports = TonService;
