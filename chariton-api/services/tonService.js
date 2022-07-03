@@ -231,7 +231,7 @@ class TonService {
     }
 
     pay(amount) {
-        return new Promise(async (resolve, reject) => {
+        return new Promise((resolve, reject) => {
             if (!this.channelActive) reject('No active channel!')
 
             amount = amount.toString();
@@ -241,57 +241,127 @@ class TonService {
             const channelState = {
                 balanceA: new BN(this.lastState.balanceA.toNumber() - toNano(amount).toNumber()),
                 balanceB: new BN(this.lastState.balanceB.toNumber() + toNano(amount).toNumber()),
-                seqnoA: new BN(this.lastState.seqnoB.toNumber() + 1),
+                seqnoA: new BN(this.lastState.seqnoA.toNumber() + 1),
                 seqnoB: new BN(0)
             };
 
-            console.log(channelState.balanceA.toNumber(), channelState.balanceB.toNumber(), channelState.seqnoA.toNumber(), channelState.seqnoB.toNumber())
+            console.log('New balance A: ', channelState.balanceA.toNumber())
+            console.log('New balance B: ', channelState.balanceB.toNumber())
+            console.log('New seq A: ', channelState.seqnoA.toNumber())
 
-            this.channelA.signState(channelState).then(signatureA1 => setTimeout(async () => {
-                if (!(await this.channelB.verifyState(channelState, signatureA1))) {
-                    reject('Invalid A signature');
-                } 
-    
-                const signatureB1 = await this.channelB.signState(channelState).then();
-    
-                this.lastState = channelState
-    
-                const data2 = await this.channelA.getData();
-                // console.log(data2)
-                console.log('balanceA = ', data2.balanceA.toString())
-                console.log('balanceB = ', data2.balanceB.toString())
-    
-                resolve(true)
-            }, 500))
-            .catch(err => reject(err))
+            this.channelA.signState(channelState).then(signatureA1 => {
+                this.channelB.verifyState(channelState, signatureA1).then(valid => {
+                    if (!valid) {
+                        reject('Invalid A signature');
+                    } else {
+                        // console.log('State valid')
+                        this.channelB.signState(channelState).then(signatureB1 => {
+                            console.log('Transferring...')
+
+                            this.lastState = channelState
+                            resolve(true)
+
+
+                            // Not sure if this below is needed
+
+                            // const checkTopUp = () => {
+                            //     return new Promise((resolve) => {
+                            //         this.channelA.getData().then((data) => {
+                            //             if (
+                            //                 channelState.balanceA.toNumber() == data.balanceA.toNumber() &&
+                            //                 channelState.balanceB.toNumber() == data.balanceB.toNumber()
+                            //             ) {
+                            //                 console.log('Transferred!');
+                            //                 console.log('balanceA = ', data.balanceA.toString())
+                            //                 console.log('balanceB = ', data.balanceB.toString())
+                            //                 resolve(true);
+                            //             } else {
+                            //                 // console.log(data.balanceA.toString(), data.balanceB.toString())
+                            //                 resolve(false);
+                            //             }
+                            //         })
+                            //     })
+                            // }
+            
+                            // const loopcheckTopUp = () => {
+                            //     checkTopUp().then(topped => {
+                            //         if (topped) {
+            
+                            //             this.lastState = channelState
+                            //             resolve(true)
+            
+                            //         } else {
+                            //             return loopcheckTopUp();
+                            //         }
+                            //     })
+                            // }
+                            // 
+                            // loopcheckTopUp()
+
+                        }).catch(err => reject(err))
+                    }
+                }).catch(err => reject(err))
+                
+            }).catch(err => reject(err))
             
 
         })
     }
 
     closeChannel() {
-        return new Promise(async (resolve, reject) => {
+        return new Promise((resolve, reject) => {
             if (!this.channelActive) reject('No active channel!')
 
-            console.log('Closing the channel...')
+            console.log('Close channel')
         
-            const signatureCloseA = await this.channelA.signClose(this.lastState);
+            this.channelA.signClose(this.lastState).then(signatureCloseA => {
 
-            if (!(await this.channelB.verifyClose(this.lastState, signatureCloseA))) {
-                reject('Invalid A signature');
-            } else {
-                this.fromWalletB.close({
-                    ...this.lastState,
-                    hisSignature: signatureCloseA
-                }).send(toNano('0.05'))
-                    .then(() => {
-                        this.channelActive = false
-                        resolve(true)
-                    })
-                    .catch(err => {
-                        reject(err)
-                    })
-            }
+                this.channelB.verifyClose(this.lastState, signatureCloseA).then(valid => {
+
+                    if (!valid) {
+                        reject('Invalid A signature');
+                    } else {
+                        this.fromWalletB.close({
+                            ...this.lastState,
+                            hisSignature: signatureCloseA
+                        }).send(toNano('0.05')).then(() => {
+
+                            console.log('Closing the channel...')
+
+                            const checkClosed = () => {
+                                return new Promise((resolve) => {
+                                    this.channelA.getChannelState().then(status => {
+                                        if (status != 1) {
+                                            console.log('Closed! Status: ', status);
+                                            resolve(true);
+                                        } else {
+                                            resolve(false);
+                                        }
+                                    })
+                                })
+                            }
+
+                            const loopcheckClosed = () => {
+                                checkClosed().then(closed => {
+                                    if (closed) {
+
+                                        this.channelActive = false
+                                        resolve(true)
+
+                                    } else {
+                                        return loopcheckClosed()
+                                    }
+                                })
+                            }
+
+                            loopcheckClosed();
+
+                        }).catch(err => reject(err)) 
+                    }
+
+                }).catch(err => reject(err))                
+
+            }).catch(err => reject(err))
 
         })
     }
@@ -312,17 +382,17 @@ const t = new TonService();
 t.initWallets().then(() => {
     t.startChannel().then(() => {
         console.log('Channel started.')
-        // t.pay(0.25).then(() => {
-        //     console.log('Paid 0.25 once')
-        //     t.pay(0.25).then(() => {
-        //         console.log('Paid 0.25 twice')
-        //         t.closeChannel().then(() => {
-        //             console.log('Channel closed.')
-        //         })
-        //     })
-        // }).catch(err => {
-        //     console.log('error...\n\n', err)
-        // })
+        t.pay(0.25).then(() => {
+            console.log('Paid 0.25 once')
+            t.pay(0.25).then(() => {
+                console.log('Paid 0.25 twice')
+                t.closeChannel().then(() => {
+                    console.log('Channel closed.')
+                })
+            })
+        }).catch(err => {
+            console.log('error...\n\n', err)
+        })
         
     }).catch(err => {
         console.log('error...\n\n', err)
