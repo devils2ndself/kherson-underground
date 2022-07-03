@@ -6,7 +6,7 @@ const mongoService = require('./services/mongoService')
 const TonService = require('./services/tonService')
 const convert = require('./convert/convert');
 const previousRides = require('./models/previousRides');
-const WsPay = require('./models/payment');
+const WsPay = require('./services/payment');
 
 const port = process.env.PORT || 8080;
 
@@ -64,49 +64,71 @@ app.get('/api/rentals/:id', async (req, res) => {
     })
 })
 
-app.post('/api/start', async (req, res) => { //req.body.id
+app.post('/api/start', async (req, res) => {
 
-    const currRental = await mongoService.getRentalById(req.body.id);
-    const exRate = await convert.convert();
-    var amount = (currRental.tariff * exRate).toFixed(2);
-    WsPay(amount, 'start');
+    if (!req.body.id) {
+        res.status(400).json({message: 'No id!'})
+    } else if (tonService.channelActive) {
+        res.status(400).json({message: 'Payment Channel Active!'})
+    } else {
 
-    res.statusCode = 201;
-    res.setHeader('Content-Type', 'text/json');
-    res.end();
+        const currRental = await mongoService.getRentalById(req.body.id);
+        const exRate = await convert.convert();
+        const ticksPerMin = 12; // once every 5 sec
+        const amountPerTick = (currRental.tariff * exRate / ticksPerMin).toFixed(9);
+        // console.log(amountPerTick)
+
+        WsPay(tonService, amountPerTick, ticksPerMin, 'start').then(r => {
+            res.status(200).json({message: 'Channel Created.'})
+        }).catch(err => {
+            res.status(500).json({message: err.toString()})
+        });
+
+    }
 
 })
 
-app.post('/api/stop', async (req, res) => { //req.body.id
-    console.log("Stoped");
-    WsPay(null, 'stop');
+app.post('/api/stop', async (req, res) => { //req.body.idif (tonService.channelActive) {
+    if (!tonService.channelActive) {
+        res.status(400).json({message: 'Payment Channel Active!'})
+    } else {
 
-    const currRental = await mongoService.getRentalById(req.body.id);
-    const exRate = await convert.convert();
-    var amount = (currRental.tariff * exRate).toFixed(2);
+        WsPay(tonService, null, null, 'stop').then(async r => {
 
-    var data = new previousRides(null, null, null, null, null);
-    // 
-    let today = new Date();
-    let dd = String(today.getDate()).padStart(2, '0');
-    let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-    let yyyy = today.getFullYear();
+            const currRental = await mongoService.getRentalById(req.body.id);
+            const exRate = await convert.convert();
+            var amount = (currRental.tariff * exRate).toFixed(2);
+    
+            var data = new previousRides(null, null, null, null, null);
+            // 
+            let today = new Date();
+            let dd = String(today.getDate()).padStart(2, '0');
+            let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            let yyyy = today.getFullYear();
+    
+            today = mm + '/' + dd + '/' + yyyy;
+            //
+            var tot = Number(amount);
+            tot *= (req.body.time / 60);
+            data.startDate = today;
+            data.time = req.body.time;
+            data.totalAmount = tot.toFixed(2);
+    
+            data.type = currRental.type;
+            data.tariff = currRental.tariff;
+            await mongoService.addPreviousRide(data);
 
-    today = mm + '/' + dd + '/' + yyyy;
-    //
-    var tot = Number(amount);
-    tot *= (req.body.time / 60);
-    data.startDate = today;
-    data.time = req.body.time;
-    data.totalAmount = tot.toFixed(2);
+            res.status(200).json({message: 'Channel Closed.'})
+            
+        }).catch(err => {
+            res.status(500).json({message: err.toString()})
+        });
 
-    data.type = currRental.type;
-    data.tariff = currRental.tariff;
-    await mongoService.addPreviousRide(data);
+    }
+})
 
-    res.statusCode = 201;
-    res.setHeader('Content-Type', 'text/json');
-    res.end();
+app.get('/api/active', (req, res) => {
+    res.json({active: tonService.channelActive})
 })
 
 mongoService.connectMongo()
