@@ -3,17 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { RouteNames } from '../router/index.js';
 import {
   AppBar,
-  Container,
-  IconButton,
   Toolbar,
   Button,
   Box,
-  Paper,
-  MenuList,
-  MenuItem,
-  Stack,
   Typography,
-  MenuIcon,
   Avatar
 } from '@mui/material';
 import Misha from '../assets/gigant.jpg'
@@ -24,7 +17,7 @@ const NavBar = () => {
   return (
       <AppBar component="nav" position='fixed' style={{zIndex: 999}}>
         <Toolbar>
-          <Avatar alt="Cindy Baker" src={Misha} style={{marginRight: 30, width: 50, height: 50}}/>
+
           <Typography
             variant="h6"
             component="div"
@@ -47,7 +40,6 @@ const NavBar = () => {
 
         </Toolbar>
       </AppBar>
-      
   );
 };
 
