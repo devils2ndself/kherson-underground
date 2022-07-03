@@ -17,6 +17,7 @@
     "mongodb": "^4.7.0",
     "mongoose": "^6.4.2",
     "node-coinmarketcap": "^0.2.0",
-    "tonweb": "^0.0.50"
+    "tonweb": "^0.0.50",
+    "ws": "^8.8.0"
   }
 }

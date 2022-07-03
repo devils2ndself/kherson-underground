@@ -39,6 +39,18 @@ async function getRentalById(params) {
     }
 
 }
+// async function getRentalByName(params) {
+
+//     try {
+//         return await Rentals.findOne({
+//             type: params
+//         });
+//     } catch (err) {
+//         console.log(err);
+//         return null;
+//     }
+
+// }
 
 function addPreviousRide(params) {
 
@@ -53,18 +65,6 @@ function getAllPreviousRides() {
     return new Promise((resolve, reject) => {
         PreviousRides.find().then(data => resolve(data)).catch(err => reject(err));
     })
-}
-
-function getAllClose(params) {
-
-}
-
-function getBySearch(params) {
-
-}
-
-function getAllTotalDonated(params) {
-
 }
 module.exports = {
     connectMongo,
