@@ -131,31 +131,7 @@ const MainPage = () => {
             </Grid>
         </Grid>
     
-        
     );
 };
-
-// const MainPage = () => {
-//     const steps = [
-//         'Join RenTON',
-//         'Open map',
-//         'Select vehicle',
-//         'Start ride',
-//         'Have fun',
-//       ];
-//     return (
-//         <AppBar component="main" position='fixed' style={{marginTop: 0, height: '100%', zIndex: -1}}>
-//             <Box sx={{ width: '100%', marginTop: '30%' }}>
-//                 <Stepper activeStep={0} alternativeLabel style={{background: 'white', paddingTop: 10, paddingBottom: 10}}>
-//                     {steps.map((label) => (
-//                     <Step key={label} sx={{borderColor: 'red'}}>
-//                         <StepLabel>{label}</StepLabel>
-//                     </Step>
-//                     ))}
-//                 </Stepper>
-//             </Box>
-//         </AppBar>
-//     );
-// };
 
 export default MainPage;
