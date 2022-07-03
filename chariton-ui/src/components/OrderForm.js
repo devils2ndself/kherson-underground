@@ -22,9 +22,6 @@ const OrderForm = ({ selectedRental, setSelectedRental, setIsSelectedMap, setSel
     let timer = useRef(null);
 
     useEffect(() => {
-        // console.log('Selected rental: ', selectedRental)
-        setIsActive(getIsActive());
-        console.log(isActive)
     }, []);
 
     const plusSecond = () => {
