@@ -1,10 +1,8 @@
 import _ from 'lodash';
-import React, { useEffect, useRef, useState } from 'react';
-import { Box, Card, Typography, Button, CardMedia, CardContent, CardActions, Grid, Paper } from '@mui/material';
+import React, { useRef, useState } from 'react';
+import { Card, Typography, Button, CardMedia, CardContent, CardActions, Grid } from '@mui/material';
 import scooter from '../assets/scooter.jpg';
 import bike from '../assets/bike.jpg';
-import { convertLength } from '@mui/material/styles/cssUtils';
-import { getIsActive, updateStart, updateStop } from '../http/rentalAPI';
 
 const RentalStatuses = {
     BOOKED: 'booked',
@@ -18,12 +16,6 @@ const OrderForm = ({ selectedRental, setSelectedRental, setIsSelectedMap, setSel
     const [ time, setTime ] = useState(0);
     let totalSeconds = 0;
     let timer = useRef(null);
-
-    useEffect(() => {
-        // console.log('Selected rental: ', selectedRental)
-        // setIsActive(getIsActive());
-        // console.log(isActive)
-    }, []);
 
     const plusSecond = () => {
         setTime(prev => prev + 1);
@@ -51,7 +43,6 @@ const OrderForm = ({ selectedRental, setSelectedRental, setIsSelectedMap, setSel
                     type: selectedRental.type
                 })
                 break;
-
             case RentalStatuses.STARTED:
                 setIsSelectedMap(true)
                 setSelectedMap({
@@ -60,7 +51,6 @@ const OrderForm = ({ selectedRental, setSelectedRental, setIsSelectedMap, setSel
                     type: selectedRental.type
                 })
                 break;
-
             case RentalStatuses.ENDED:
                 setIsSelectedMap(false)
                 setSelectedMap({
@@ -68,15 +58,11 @@ const OrderForm = ({ selectedRental, setSelectedRental, setIsSelectedMap, setSel
                     zoom: 15,
                     type: selectedRental.type
                 })
-
-                console.log(`Rental ID: ${selectedRental._id} | TotalSeconds: ${totalSeconds}`)
-
-                // ТУТ ПОСЛЕ END RIDE ОБНОВЛЯЕТСЯ МАССИВ 
-                
                 setSelectedRental({
                     _id: '00',
                     type: 'none',
                     tariff: 0,
+                    tariffUST: 0,
                     barrery: 0,
                     inUse: false,
                     location: {
@@ -92,66 +78,67 @@ const OrderForm = ({ selectedRental, setSelectedRental, setIsSelectedMap, setSel
 
     return (
         <div style={{height: '100%'}} >
-
             <Card style={{ height: 'calc(100% - 60px)', width: '100%', marginBottom: '8px'}}>
+                {
+                    selectedRental._id !== '00' ?
+                        <div>
+                            { selectedRental.type === 'scooter' ?
+                                <CardMedia
+                                    component="img"
+                                    height="300"
+                                    image={scooter}
+                                    alt="scooter"
+                                />
+                                :
+                                <CardMedia
+                                    component="img"
+                                    height="300"
+                                    image={bike}
+                                    alt="bike"
+                                />
+                            }
 
-                    {
-                        selectedRental._id !== '00' ?
-                            <div>
-                                { selectedRental.type === 'scooter' ?
-                                    <CardMedia
-                                        component="img"
-                                        height="300"
-                                        image={scooter}
-                                        alt="scooter"
-                                    />
-                                    :
-                                    <CardMedia
-                                        component="img"
-                                        height="300"
-                                        image={bike}
-                                        alt="bike"
-                                    />
+                            <CardContent>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={6}>
+                                        <Typography gutterBottom variant="h5" component="div">
+                                            {_.toUpper(selectedRental.type)}
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <Typography gutterBottom variant="h5" component="div">
+                                            {selectedRental.tariff} TON  per min
+                                        </Typography>
+                                        <Typography gutterBottom variant="body2" component="div" style={{marginTop: -10}}>
+                                            {selectedRental.tariffUST} USD
+                                        </Typography>
+                                    </Grid>
+                                </Grid>
+                                
+                                { selectedRental.type === 'scooter' &&
+                                    <Typography variant="body2" color="text.secondary">
+                                        Battery: {selectedRental.battery}%
+                                    </Typography>
                                 }
 
-                                <CardContent>
-                                    <Grid container spacing={2}>
-                                        <Grid item xs={6}>
-                                            <Typography gutterBottom variant="h5" component="div">
-                                                {_.toUpper(selectedRental.type)}
-                                            </Typography>
-                                        </Grid>
-                                        <Grid item xs={6}>
-                                            <Typography gutterBottom variant="h5" component="div">
-                                                {selectedRental.tariff} TON per min
-                                            </Typography>
-                                        </Grid>
-                                    </Grid>
-                                    
-                                    { selectedRental.type === 'scooter' &&
-                                        <Typography variant="body2" color="text.secondary">
-                                            Battery: {selectedRental.battery}%
-                                        </Typography>
-                                    }
-
-                                    <Typography variant="body2" color="text.secondary">
-                                        Locale: {selectedRental.location.lat} : {selectedRental.location.lng}
-                                    </Typography>
-
-                                    {(rentalStatus === RentalStatuses.BOOKED || rentalStatus === RentalStatuses.STARTED) &&
-                                        <Typography variant="body2" color="text.secondary">
-                                            Time: { time }
-                                        </Typography>
-                                    }
-
-                                </CardContent>
-                            </div>
-                            :
-                            <div>
-                                <Typography style={{marginTop: '60%', textAlign: 'center'}}>
-                                    Select vehicle
+                                <Typography variant="body2" color="text.secondary">
+                                    Locale: {selectedRental.location.lat} : {selectedRental.location.lng}
                                 </Typography>
-                            </div>
+
+                                {(rentalStatus === RentalStatuses.BOOKED || rentalStatus === RentalStatuses.STARTED) &&
+                                    <Typography variant="body2" color="text.secondary">
+                                        Time: { time }
+                                    </Typography>
+                                }
+
+                            </CardContent>
+                        </div>
+                        :
+                        <div>
+                            <Typography style={{marginTop: '60%', textAlign: 'center'}}>
+                                Select vehicle
+                            </Typography>
+                        </div>
                 }
             </Card>
 

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Map from '../components/Map/Map';
-import { useJsApiLoader } from '@react-google-maps/api';
-import { Box, Typography, Grid, AppBar } from '@mui/material'
+import { Box, Grid, AppBar } from '@mui/material'
 import OrderForm from '../components/OrderForm';
 import { getRentals } from '../http/rentalAPI.js';
 import SelectedMap from '../components/SelectedMap';
@@ -18,6 +17,7 @@ const MapPage = () => {
         _id: '00',
         type: 'none',
         tariff: 0,
+        tariffUST: 0,
         barrery: 0,
         inUse: false,
         location: {
@@ -34,7 +34,6 @@ const MapPage = () => {
 
     return (
         <AppBar component="main" position='fixed' style={{marginTop: 10, height: '100%', zIndex: -1, background: '#EDEDED'}}> 
-
             <Box sx={{ flexGrow: 1 }} style={{marginTop: 70, marginLeft: 10, marginRight: 10}}>
                 <Grid container spacing={2}>
                     <Grid item xs={6} md={8}>

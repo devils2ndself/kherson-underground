@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Container, Typography, AppBar, CardHeader, Avatar, IconButton, MoreVertIcon, CardContent } from '@mui/material';
+import { Card, Typography, CardHeader, Avatar, CardContent, Box } from '@mui/material';
 import { getPreviousRides } from '../http/profileAPI';
 import manIcon from '../assets/manIcon.png';
 
@@ -14,12 +14,7 @@ const ProfilePage = () => {
     }, [])
 
     return (
-        // <Container style={{marginTop: 50}} component="main" sx={{ p: 3 }} >
-        //     <Typography>
-        //         Profile
-        //     </Typography>
-        // </Container>
-        <AppBar component="main" position='fixed' style={{marginTop: 10, height: '100%', zIndex: -1, background: '#EDEDED'}}> 
+        <div style={{width: '100%', height: '100%', background: '#EDEDED'}}>
             <Card style={{height: '75%', width: '75%', background: 'red', padding: 30, marginLeft: 'calc(19% / 2)', marginTop: 'calc(10% / 2)', background: 'white'}}>
                 <CardHeader
                     avatar={ <Avatar src={manIcon} /> }
@@ -28,21 +23,22 @@ const ProfilePage = () => {
                 />
 
                 <CardContent style={{marginLeft: 60}} >
-                    <Typography variant="h6" style={{marginTop: 10, marginBottom: 10}}>
+                    <Typography variant="h6" style={{marginTop: 10, marginBottom: 20}}>
                         Previous rides:
                     </Typography>
                     
+                    <Box component='main'>
                     {previousRides.map((prevRide) =>
                         <div style={{marginTop: 10}} key={prevRide._id}>
-                            <Typography>
+                            <Typography style={{fontSize: 14}}>
                                 Date: {prevRide.startDate} | Type: {prevRide.type} | Price: {prevRide.totalAmount} TON | Id: {prevRide._id} 
                             </Typography>
                         </div>
                     )}
-
+                    </Box>
                 </CardContent>
             </Card>
-        </AppBar>
+        </div>
     );
 };
 

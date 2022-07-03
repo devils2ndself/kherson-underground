@@ -2,8 +2,8 @@ import React from 'react';
 import L from 'leaflet';
 import Scooter from '../assets/selectedScooterIcon.png';
 import Bike from '../assets/selectedBikeIcon.png';
-import { Button, Grid, Box, Item, Card } from '@mui/material';
-import { MapContainer, TileLayer, useMap, Popup, Marker } from 'react-leaflet';
+import { Card } from '@mui/material';
+import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 
 const SelectedMap = ({ selectedMap }) => {
 
@@ -27,22 +27,19 @@ const SelectedMap = ({ selectedMap }) => {
 
     return (
         <Card style={{ height: '100%', width: '100%'}}>
-        <MapContainer
+            <MapContainer
                 center={selectedMap.center}
                 zoom={selectedMap.zoom}
                 scrollWheelZoom={true}
                 style={{ width: '100%', height: '85vh' }}
             >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-
                 <Marker
                     icon={whichIcon(selectedMap.type)}
                     position={selectedMap.center}
-                >
-
-                </Marker>
+                />
             </MapContainer>
-            </Card>
+        </Card>
       );
 };
 
