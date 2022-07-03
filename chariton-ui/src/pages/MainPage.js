@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Typography, Box, Button, Grid, Stepper, StepLabel, Step, Paper, StepContent, Alert, AlertTitle } from '@mui/material'
+import { Typography, Box, Button, Grid, Stepper, StepLabel, Step, Paper, StepContent,  Avatar, Alert, AlertTitle } from '@mui/material'
 import { RouteNames } from '../router';
 import toncoinIcon from '../assets/toncoinIcon.png';
 import sendIcon from '../assets/sendIcon.png';
