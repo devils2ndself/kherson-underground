@@ -14,13 +14,9 @@ const ProfilePage = () => {
     }, [])
 
     return (
-        // <Container style={{marginTop: 50}} component="main" sx={{ p: 3 }} >
-        //     <Typography>
-        //         Profile
-        //     </Typography>
-        // </Container>
         <AppBar component="main" position='fixed' style={{marginTop: 10, height: '100%', zIndex: -1, background: '#EDEDED'}}> 
             <Card style={{height: '75%', width: '75%', background: 'red', padding: 30, marginLeft: 'calc(19% / 2)', marginTop: 'calc(10% / 2)', background: 'white'}}>
+                
                 <CardHeader
                     avatar={ <Avatar src={manIcon} /> }
                     title="Pavel"
@@ -31,7 +27,6 @@ const ProfilePage = () => {
                     <Typography variant="h6" style={{marginTop: 10, marginBottom: 10}}>
                         Previous rides:
                     </Typography>
-                    
                     {previousRides.map((prevRide) =>
                         <div style={{marginTop: 10}} key={prevRide._id}>
                             <Typography>
@@ -39,8 +34,8 @@ const ProfilePage = () => {
                             </Typography>
                         </div>
                     )}
-
                 </CardContent>
+
             </Card>
         </AppBar>
     );

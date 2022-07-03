@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { $host } from './index';
 
 export const getPreviousRides = async () => {
