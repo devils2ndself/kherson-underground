@@ -38,6 +38,7 @@ const MainPage = () => {
     };
 
     return (
+        // <AppBar component="main" position='fixed' style={{marginTop: 10, height: '100%', zIndex: -1}}>
         <Box sx={{ marginTop: 10, marginLeft: 10, maxWidth: 400 }}>
         <Stepper activeStep={activeStep} orientation="vertical">
             {steps.map((step, index) => (
@@ -104,6 +105,7 @@ const MainPage = () => {
             </Paper>
         )}
         </Box>
+        // </AppBar>
     );
 };
 

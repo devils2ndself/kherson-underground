@@ -4,6 +4,7 @@ import { Box, Card, Typography, Button, CardMedia, CardContent, CardActions, Gri
 import scooter from '../assets/scooter.jpg';
 import bike from '../assets/bike.jpg';
 import { convertLength } from '@mui/material/styles/cssUtils';
+import { updateStart, updateStop } from '../http/rentalAPI';
 
 const RentalStatuses = {
     BOOKED: 'booked',
@@ -15,6 +16,7 @@ const RentalStatuses = {
 const OrderForm = ({ selectedRental, setSelectedRental, setIsSelectedMap, setSelectedMap }) => {
     const [ rentalStatus, setRentalStatus ] = useState(RentalStatuses.NONE);
     const [ time, setTime ] = useState(0);
+    const [ isActive, setIsActive ] = useState(true);
     let totalSeconds = 0;
     let timer = useRef(null);
 
@@ -85,7 +87,10 @@ const OrderForm = ({ selectedRental, setSelectedRental, setIsSelectedMap, setSel
                 break;   
             default:
         }
+    }
 
+    const handleUndefinedActive = () => {
+        setIsActive(false);
     }
 
     return (
@@ -93,60 +98,67 @@ const OrderForm = ({ selectedRental, setSelectedRental, setIsSelectedMap, setSel
 
             <Card style={{ height: 'calc(100% - 60px)', width: '100%', marginBottom: '8px'}}>
 
-                { selectedRental._id !== '00' ?
-                    <div>
-                        { selectedRental.type === 'scooter' ?
-                            <CardMedia
-                                component="img"
-                                height="300"
-                                image={scooter}
-                                alt="scooter"
-                            />
+                    { !isActive ?
+                        selectedRental._id !== '00' ?
+                            <div>
+                                { selectedRental.type === 'scooter' ?
+                                    <CardMedia
+                                        component="img"
+                                        height="300"
+                                        image={scooter}
+                                        alt="scooter"
+                                    />
+                                    :
+                                    <CardMedia
+                                        component="img"
+                                        height="300"
+                                        image={bike}
+                                        alt="bike"
+                                    />
+                                }
+
+                                <CardContent>
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={6}>
+                                            <Typography gutterBottom variant="h5" component="div">
+                                                {_.toUpper(selectedRental.type)}
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <Typography gutterBottom variant="h5" component="div">
+                                                {selectedRental.tariff} TON per min
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
+                                    
+                                    { selectedRental.type === 'scooter' &&
+                                        <Typography variant="body2" color="text.secondary">
+                                            Battery: {selectedRental.battery}%
+                                        </Typography>
+                                    }
+
+                                    <Typography variant="body2" color="text.secondary">
+                                        Locale: {selectedRental.location.lat} : {selectedRental.location.lng}
+                                    </Typography>
+
+                                    {(rentalStatus === RentalStatuses.BOOKED || rentalStatus === RentalStatuses.STARTED) &&
+                                        <Typography variant="body2" color="text.secondary">
+                                            Time: { time }
+                                        </Typography>
+                                    }
+
+                                </CardContent>
+                            </div>
                             :
-                            <CardMedia
-                                component="img"
-                                height="300"
-                                image={bike}
-                                alt="bike"
-                            />
-                        }
-
-                        <CardContent>
-                            <Grid container spacing={2}>
-                                <Grid item xs={6}>
-                                    <Typography gutterBottom variant="h5" component="div">
-                                        {_.toUpper(selectedRental.type)}
-                                    </Typography>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Typography gutterBottom variant="h5" component="div">
-                                        {selectedRental.tariff} TON per min
-                                    </Typography>
-                                </Grid>
-                            </Grid>
-                            
-                            { selectedRental.type === 'scooter' &&
-                                <Typography variant="body2" color="text.secondary">
-                                    Battery: {selectedRental.battery}%
+                            <div>
+                                <Typography style={{marginTop: '60%', textAlign: 'center'}}>
+                                    Select vehicle
                                 </Typography>
-                            }
-
-                            <Typography variant="body2" color="text.secondary">
-                                Locale: {selectedRental.location.lat} : {selectedRental.location.lng}
-                            </Typography>
-
-                            {(rentalStatus === RentalStatuses.BOOKED || rentalStatus === RentalStatuses.STARTED) &&
-                                <Typography variant="body2" color="text.secondary">
-                                    Time: { time }
-                                </Typography>
-                            }
-
-                        </CardContent>
-                    </div>
+                            </div>
                     :
                     <div>
                         <Typography style={{marginTop: '60%', textAlign: 'center'}}>
-                            Select vehicle
+                            You have an active session
                         </Typography>
                     </div>
                 }
@@ -154,40 +166,49 @@ const OrderForm = ({ selectedRental, setSelectedRental, setIsSelectedMap, setSel
 
             <Card style={{ height: '52px', width: '100%'}}>
 
-                { selectedRental.inUse || selectedRental._id === '00' ? 
-                    <CardActions>
-                        <Button style={{width: '33%'}} variant="contained" disabled>Hold</Button>
-                        <Button style={{width: '33%'}} variant="contained" color="success" disabled>Start ride</Button>
-                        <Button style={{width: '33%'}} variant="contained" color="error" disabled>End ride</Button>
-                    </CardActions>
-                    :
-                    rentalStatus === RentalStatuses.NONE ?
+                {!isActive ? 
+                
+                    selectedRental.inUse || selectedRental._id === '00' ? 
                         <CardActions>
-                            <Button style={{width: '33%'}} variant="contained" onClick={() => { changeRentalStatus(RentalStatuses.BOOKED); startTimer(); }}>Hold</Button>
-                            <Button style={{width: '33%'}} variant="contained" color="success" onClick={() => { changeRentalStatus(RentalStatuses.STARTED); startTimer(); }} >Start ride</Button>
-                            <Button style={{width: '33%'}} variant="contained" color="error" disabled >End ride</Button>
+                            <Button style={{width: '33%'}} variant="contained" disabled>Hold</Button>
+                            <Button style={{width: '33%'}} variant="contained" color="success" disabled>Start ride</Button>
+                            <Button style={{width: '33%'}} variant="contained" color="error" disabled>End ride</Button>
                         </CardActions>
                         :
-                        rentalStatus === RentalStatuses.BOOKED ?
+                        rentalStatus === RentalStatuses.NONE ?
                             <CardActions>
-                                <Button style={{width: '33%'}} variant="contained" disabled >Hold</Button>
-                                <Button style={{width: '33%'}} variant="contained" color="success" onClick={() => changeRentalStatus(RentalStatuses.STARTED)} >Start ride</Button> {/* не нужно перезапускать таймер */}
-                                <Button style={{width: '33%'}} variant="contained" color="error" onClick={() => { totalSeconds = time; changeRentalStatus(RentalStatuses.ENDED); }} >End ride</Button>
+                                <Button style={{width: '33%'}} variant="contained" onClick={() => { changeRentalStatus(RentalStatuses.BOOKED); startTimer(); }}>Hold</Button>
+                                {/* <Button style={{width: '33%'}} variant="contained" color="success" onClick={() => { changeRentalStatus(RentalStatuses.STARTED); startTimer(); }} >Start ride</Button> */}
+                                <Button style={{width: '33%'}} variant="contained" color="success" onClick={() => { updateStart(selectedRental._id) }} >Start ride</Button>
+                                <Button style={{width: '33%'}} variant="contained" color="error" disabled >End ride</Button>
                             </CardActions>
                             :
-                            rentalStatus === RentalStatuses.STARTED ?
-                                <CardActions>   
+                            rentalStatus === RentalStatuses.BOOKED ?
+                                <CardActions>
                                     <Button style={{width: '33%'}} variant="contained" disabled >Hold</Button>
-                                    <Button style={{width: '33%'}} variant="contained" color="success" disabled >Start ride</Button>
-                                    <Button style={{width: '33%'}} variant="contained" color="error" onClick={() => { totalSeconds = time; changeRentalStatus(RentalStatuses.ENDED); }}>End ride</Button>
+                                    <Button style={{width: '33%'}} variant="contained" color="success" onClick={() => changeRentalStatus(RentalStatuses.STARTED)} >Start ride</Button> {/* не нужно перезапускать таймер */}
+                                    <Button style={{width: '33%'}} variant="contained" color="error" onClick={() => { totalSeconds = time; changeRentalStatus(RentalStatuses.ENDED); }} >End ride</Button>
                                 </CardActions>
                                 :
-                                rentalStatus === RentalStatuses.ENDED &&
+                                rentalStatus === RentalStatuses.STARTED ?
                                     <CardActions>   
-                                        <Button style={{width: '33%'}} variant="contained" onClick={() => { changeRentalStatus(RentalStatuses.BOOKED); startTimer(); }} >Hold</Button>
-                                        <Button style={{width: '33%'}} variant="contained" color="success" onClick={() => { changeRentalStatus(RentalStatuses.STARTED); startTimer();}} >Start ride</Button>
-                                        <Button style={{width: '33%'}} variant="contained" color="error" disabled >End ride</Button>
+                                        <Button style={{width: '33%'}} variant="contained" disabled >Hold</Button>
+                                        <Button style={{width: '33%'}} variant="contained" color="success" disabled >Start ride</Button>
+                                        <Button style={{width: '33%'}} variant="contained" color="error" onClick={() => { totalSeconds = time; changeRentalStatus(RentalStatuses.ENDED); }}>End ride</Button>
                                     </CardActions>
+                                    :
+                                    rentalStatus === RentalStatuses.ENDED &&
+                                        <CardActions>   
+                                            <Button style={{width: '33%'}} variant="contained" onClick={() => { changeRentalStatus(RentalStatuses.BOOKED); startTimer(); }} >Hold</Button>
+                                            <Button style={{width: '33%'}} variant="contained" color="success" onClick={() => { changeRentalStatus(RentalStatuses.STARTED); startTimer();}} >Start ride</Button>
+                                            <Button style={{width: '33%'}} variant="contained" color="error" disabled >End ride</Button>
+                                        </CardActions>
+                        :
+                        <CardActions>   
+                            <Button style={{width: '33%'}} variant="contained" disabled >Hold</Button>
+                            <Button style={{width: '33%'}} variant="contained" color="success" disabled >Start ride</Button>
+                            <Button style={{width: '33%'}} variant="contained" color="error" onClick={() => handleUndefinedActive()} >End ride</Button>
+                        </CardActions>
                 }
             </Card>
         </div>

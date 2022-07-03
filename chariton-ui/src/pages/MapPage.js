@@ -35,20 +35,20 @@ const MapPage = () => {
     return (
         <AppBar component="main" position='fixed' style={{marginTop: 10, height: '100%', zIndex: -1, background: '#EDEDED'}}> 
 
-        <Box sx={{ flexGrow: 1 }} style={{marginTop: 70, marginLeft: 10, marginRight: 10}}>
-            <Grid container spacing={2}>
-                <Grid item xs={6} md={8}>
-                    {!isSelectedMap ?
-                        <Map rentals={rentals} selectedMap={selectedMap} setSelectedRental={setSelectedRental} />
-                        :
-                        <SelectedMap selectedMap={selectedMap} />
-                    }
+            <Box sx={{ flexGrow: 1 }} style={{marginTop: 70, marginLeft: 10, marginRight: 10}}>
+                <Grid container spacing={2}>
+                    <Grid item xs={6} md={8}>
+                        {!isSelectedMap ?
+                            <Map rentals={rentals} selectedMap={selectedMap} setSelectedRental={setSelectedRental} />
+                            :
+                            <SelectedMap selectedMap={selectedMap} />
+                        }
+                    </Grid>
+                    <Grid item xs={6} md={4}>
+                        <OrderForm selectedRental={selectedRental} setSelectedRental={setSelectedRental} setIsSelectedMap={setIsSelectedMap} setSelectedMap={setSelectedMap}/>
+                    </Grid>
                 </Grid>
-                <Grid item xs={6} md={4}>
-                    <OrderForm selectedRental={selectedRental} setSelectedRental={setSelectedRental} setIsSelectedMap={setIsSelectedMap} setSelectedMap={setSelectedMap}/>
-                </Grid>
-            </Grid>
-      </Box>
+            </Box>
        </AppBar>
     );
 };
