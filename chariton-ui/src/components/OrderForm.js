@@ -90,16 +90,12 @@ const OrderForm = ({ selectedRental, setSelectedRental, setIsSelectedMap, setSel
         }
     }
 
-    const handleUndefinedActive = () => {
-        setIsActive(false);
-    }
-
     return (
         <div style={{height: '100%'}} >
 
             <Card style={{ height: 'calc(100% - 60px)', width: '100%', marginBottom: '8px'}}>
 
-                    { !isActive ?
+                    {
                         selectedRental._id !== '00' ?
                             <div>
                                 { selectedRental.type === 'scooter' ?
@@ -156,19 +152,12 @@ const OrderForm = ({ selectedRental, setSelectedRental, setIsSelectedMap, setSel
                                     Select vehicle
                                 </Typography>
                             </div>
-                    :
-                    <div>
-                        <Typography style={{marginTop: '60%', textAlign: 'center'}}>
-                            You have an active session
-                        </Typography>
-                    </div>
                 }
             </Card>
 
             <Card style={{ height: '52px', width: '100%'}}>
 
-                {!isActive ? 
-                    
+                {  
                     selectedRental.inUse || selectedRental._id === '00' ? 
                         <CardActions>
                             <Button style={{width: '33%'}} variant="contained" disabled>Hold</Button>
@@ -178,8 +167,8 @@ const OrderForm = ({ selectedRental, setSelectedRental, setIsSelectedMap, setSel
                         :
                         rentalStatus === RentalStatuses.NONE ?
                             <CardActions>
-                                <Button style={{width: '33%'}} variant="contained" onClick={() => { updateStartApi(selectedRental._id); changeRentalStatus(RentalStatuses.BOOKED); startTimer(); }}>Hold</Button>
-                                <Button style={{width: '33%'}} variant="contained" color="success" onClick={() => { updateStartApi(selectedRental._id); changeRentalStatus(RentalStatuses.STARTED); startTimer(); }} >Start ride</Button>
+                                <Button style={{width: '33%'}} variant="contained" onClick={() => { changeRentalStatus(RentalStatuses.BOOKED); startTimer(); }}>Hold</Button>
+                                <Button style={{width: '33%'}} variant="contained" color="success" onClick={() => { changeRentalStatus(RentalStatuses.STARTED); startTimer(); }} >Start ride</Button>
                                 <Button style={{width: '33%'}} variant="contained" color="error" disabled >End ride</Button>
                             </CardActions>
                             :
@@ -187,28 +176,22 @@ const OrderForm = ({ selectedRental, setSelectedRental, setIsSelectedMap, setSel
                                 <CardActions>
                                     <Button style={{width: '33%'}} variant="contained" disabled >Hold</Button>
                                     <Button style={{width: '33%'}} variant="contained" color="success" onClick={() => changeRentalStatus(RentalStatuses.STARTED)} >Start ride</Button> {/* не нужно перезапускать таймер */}
-                                    <Button style={{width: '33%'}} variant="contained" color="error" onClick={() => { totalSeconds = time; updateStopApi(selectedRental._id, totalSeconds); changeRentalStatus(RentalStatuses.ENDED); }} >End ride</Button>
+                                    <Button style={{width: '33%'}} variant="contained" color="error" onClick={() => { totalSeconds = time; changeRentalStatus(RentalStatuses.ENDED); }} >End ride</Button>
                                 </CardActions>
                                 :
                                 rentalStatus === RentalStatuses.STARTED ?
                                     <CardActions>   
                                         <Button style={{width: '33%'}} variant="contained" disabled >Hold</Button>
                                         <Button style={{width: '33%'}} variant="contained" color="success" disabled >Start ride</Button>
-                                        <Button style={{width: '33%'}} variant="contained" color="error" onClick={() => { totalSeconds = time; updateStopApi(selectedRental._id, totalSeconds); changeRentalStatus(RentalStatuses.ENDED); }}>End ride</Button>
+                                        <Button style={{width: '33%'}} variant="contained" color="error" onClick={() => { totalSeconds = time; changeRentalStatus(RentalStatuses.ENDED); }}>End ride</Button>
                                     </CardActions>
                                     :
                                     rentalStatus === RentalStatuses.ENDED &&
                                         <CardActions>   
-                                            <Button style={{width: '33%'}} variant="contained" onClick={() => { updateStartApi(selectedRental._id); changeRentalStatus(RentalStatuses.BOOKED); startTimer(); }} >Hold</Button>
-                                            <Button style={{width: '33%'}} variant="contained" color="success" onClick={() => { updateStartApi(selectedRental._id); changeRentalStatus(RentalStatuses.STARTED); startTimer();}} >Start ride</Button>
+                                            <Button style={{width: '33%'}} variant="contained" onClick={() => { changeRentalStatus(RentalStatuses.BOOKED); startTimer(); }} >Hold</Button>
+                                            <Button style={{width: '33%'}} variant="contained" color="success" onClick={() => { changeRentalStatus(RentalStatuses.STARTED); startTimer();}} >Start ride</Button>
                                             <Button style={{width: '33%'}} variant="contained" color="error" disabled >End ride</Button>
                                         </CardActions>
-                        :
-                        <CardActions>   
-                            <Button style={{width: '33%'}} variant="contained" disabled >Hold</Button>
-                            <Button style={{width: '33%'}} variant="contained" color="success" disabled >Start ride</Button>
-                            <Button style={{width: '33%'}} variant="contained" color="error" onClick={() => handleUndefinedActive()} >End ride</Button>
-                        </CardActions>
                 }
             </Card>
         </div>
