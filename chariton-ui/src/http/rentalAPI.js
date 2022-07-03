@@ -7,9 +7,8 @@ export const getRentals = async () => {
 };
 
 export const getIsActive = async () => {
-    // const data = await $host.get();
-    const data = {active: false}
-    return data;
+    const { data }  = await $host.get('api/active');
+    return data.active;
 }
 
 export const updateStop = async (id, time) => {

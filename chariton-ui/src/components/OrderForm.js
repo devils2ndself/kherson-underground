@@ -4,7 +4,7 @@ import { Box, Card, Typography, Button, CardMedia, CardContent, CardActions, Gri
 import scooter from '../assets/scooter.jpg';
 import bike from '../assets/bike.jpg';
 import { convertLength } from '@mui/material/styles/cssUtils';
-import { updateStart, updateStop } from '../http/rentalAPI';
+import { getIsActive, updateStart, updateStop } from '../http/rentalAPI';
 
 const RentalStatuses = {
     BOOKED: 'booked',
@@ -23,6 +23,8 @@ const OrderForm = ({ selectedRental, setSelectedRental, setIsSelectedMap, setSel
 
     useEffect(() => {
         // console.log('Selected rental: ', selectedRental)
+        setIsActive(getIsActive());
+        console.log(isActive)
     }, []);
 
     const plusSecond = () => {
@@ -184,7 +186,7 @@ const OrderForm = ({ selectedRental, setSelectedRental, setIsSelectedMap, setSel
             <Card style={{ height: '52px', width: '100%'}}>
 
                 {!isActive ? 
-                
+                    
                     selectedRental.inUse || selectedRental._id === '00' ? 
                         <CardActions>
                             <Button style={{width: '33%'}} variant="contained" disabled>Hold</Button>
