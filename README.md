@@ -24,6 +24,8 @@ The working prototype can be found [here](https://web-renton.herokuapp.com/) (ht
   - The active payment channel will have a new id and address each time one is started. 
 
 ### A couple of other notes:
+  - The rent price for transportation is stored in USDT, being converted to TON via CoinMarketCap API.
+
   - Putting payment channels to hosting had it's own challenges of maximum transactions limits, so we made a decision of not uploading it to the production, but it works great in local environment.
   
   - ChariTON was our previous idea and we couldn't rename the main folders at that stage.
