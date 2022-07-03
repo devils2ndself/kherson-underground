@@ -52,7 +52,7 @@ class TonService {
             console.log('balanceB = ', (new BN(balanceB).toNumber()))
             
             const channelInitState = {
-                balanceA: toNano('1'),
+                balanceA: toNano('10'),
                 balanceB: toNano('0.5'), 
                 seqnoA: new BN(0),
                 seqnoB: new BN(0)
@@ -313,17 +313,26 @@ class TonService {
             if (!this.channelActive) reject('No active channel!')
 
             console.log('Close channel')
-        
-            this.channelA.signClose(this.lastState).then(signatureCloseA => {
 
-                this.channelB.verifyClose(this.lastState, signatureCloseA).then(valid => {
+            const theLastState = {
+                balanceA: this.lastState.balanceA,
+                balanceB: this.lastState.balanceB,
+                seqnoA: new BN(this.lastState.seqnoA.toNumber() + 1),
+                seqnoB: new BN(this.lastState.seqnoB.toNumber() + 1)
+            };
+
+            console.log('The last state for closing: ', theLastState)
+        
+            this.channelB.signClose(theLastState).then(signatureCloseB => {
+
+                this.channelA.verifyClose(theLastState, signatureCloseB).then(valid => {
 
                     if (!valid) {
                         reject('Invalid A signature');
                     } else {
-                        this.fromWalletB.close({
-                            ...this.lastState,
-                            hisSignature: signatureCloseA
+                        this.fromWalletA.close({
+                            ...theLastState,
+                            hisSignature: signatureCloseB
                         }).send(toNano('0.05')).then(() => {
 
                             console.log('Closing the channel...')
@@ -335,6 +344,13 @@ class TonService {
                                             console.log('Closed! Status: ', status);
                                             resolve(true);
                                         } else {
+                                            // console.log('Status: ', status);
+
+                                            // this.channelA.getData().then((data) => {
+                                            //     console.log('balanceA = ', data.balanceA.toString())
+                                            //     console.log('balanceB = ', data.balanceB.toString())
+                                            // })
+
                                             resolve(false);
                                         }
                                     })
@@ -382,10 +398,10 @@ const t = new TonService();
 t.initWallets().then(() => {
     t.startChannel().then(() => {
         console.log('Channel started.')
-        t.pay(0.25).then(() => {
-            console.log('Paid 0.25 once')
-            t.pay(0.25).then(() => {
-                console.log('Paid 0.25 twice')
+        t.pay(1).then(() => {
+            console.log('Paid 1')
+            t.pay(0.5).then(() => {
+                console.log('Paid 0.5')
                 t.closeChannel().then(() => {
                     console.log('Channel closed.')
                 })
