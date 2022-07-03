@@ -1,23 +1,37 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, Typography, Box, Button, AppBar, Toolbar, Stepper, StepLabel, Step, Paper, StepContent, IconButton, Avatar } from '@mui/material'
+import { Container, Typography, Box, Button, AppBar, Toolbar, Stepper, StepLabel, Step, Paper, StepContent, IconButton, Avatar, Alert, AlertTitle } from '@mui/material'
 import { RouteNames } from '../router';
 import toncoinIcon from '../assets/toncoinIcon.png';
 import sendIcon from '../assets/sendIcon.png';
 
 const steps = [
     {
-      label: 'Idea ?',
-      description: `What is the point of idea ? Let's describe it!`,
+        label: '',
+        description: `RenTON allows you to rent things by crypto.`,
     },
     {
-      label: 'What is RenTON',
-      description:
-        'RenTON is a crypto rent ....',
+        label: 'Believe it',
+        description: 'Ordinary rent ? But future starts here.',
     },
     {
-      label: 'Difference with other common rent cervices ',
-      description: `It's quite better!!!`,
+        label: 'The great stands for the small',
+        description: `Opportunities open up with every new step.`,
+    },
+    {
+        label: 'And here it is',
+        description: `Simple but smart.`,
+    },
+    {
+        label: 'No more lie',
+        description: `Smart-contracts leave no chance for scammers.`,
+    },
+    {
+        label: 'New approach',
+        description: `It's not banking. It's a new world.`,
+    },
+    {
+        description: `The run has begun. And we stand at the root.`,
     },
 ];
 
@@ -40,15 +54,15 @@ const MainPage = () => {
     return (
         // <AppBar component="main" position='fixed' style={{marginTop: 10, height: '100%', zIndex: -1}}>
         <Box sx={{ marginTop: 10, marginLeft: 10, maxWidth: 400 }}>
+            <Alert severity="info" style={{width: 400, marginBottom: 20}}>
+                <AlertTitle>What about idea ?</AlertTitle>
+                Short description — <strong>check it out!</strong>
+            </Alert>
         <Stepper activeStep={activeStep} orientation="vertical">
             {steps.map((step, index) => (
             <Step key={step.label}>
                 <StepLabel
-                optional={
-                    index === 2 ? (
-                    <Typography variant="caption">Last step</Typography>
-                    ) : null
-                }
+                
                 >
                 {step.label}
                 </StepLabel>
@@ -60,7 +74,6 @@ const MainPage = () => {
 
                             <Button
                                 variant="contained"
-                                // color='primary'
                                 style={{background: '#0088cc'}}
                                 onClick={handleNext}
                                 sx={{ mt: 1, mr: 1 }}
@@ -70,11 +83,13 @@ const MainPage = () => {
                             </Button>
                             :
                             <Button
-                                variant="contained"
+                                variant="outlined"
+                                color='primary'
                                 onClick={handleNext}
                                 sx={{ mt: 1, mr: 1 }}
+                                style={{height: 25, width: 80}}
                             >
-                                Continue
+                                Next
                             </Button>
                         }
                         
@@ -82,6 +97,8 @@ const MainPage = () => {
                             disabled={index === 0}
                             onClick={handleBack}
                             sx={{ mt: 1, mr: 1 }}
+                            style={{height: 25, width: 80}}
+                            size='small'
                         >
                             Back
                         </Button>
