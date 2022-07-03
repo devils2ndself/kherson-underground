@@ -8,7 +8,8 @@ import Scooter from '../../assets/scooterIcon.png';
 import Bike from '../../assets/bikeIcon.png';
 import AccessibleIcon from '@mui/icons-material/Accessible';
 
-const Map = ({rentals, setSelectedRental}) => {
+const Map = ({rentals, setSelectedRental }) => {
+  
   useEffect(() => {
     // console.log(rentals);
   })
@@ -17,21 +18,14 @@ const Map = ({rentals, setSelectedRental}) => {
     console.log(scooter);
   };
 
-  const GetIcon = (iconSize, iconString) => {
-    return L.icon({
-      iconUrl: require(iconString),
-      iconSize
-    })
-  }
-
   const ScooterIcon = new L.Icon({
     iconUrl: Scooter,
-    iconSize: [30, 30],
+    iconSize: [40, 40],
   });
 
   const BikeIcon = new L.Icon({
     iconUrl: Bike,
-    iconSize: [30, 30],
+    iconSize: [40, 40],
   });
 
   const whichIcon = (rental) => {
@@ -45,7 +39,7 @@ const Map = ({rentals, setSelectedRental}) => {
     <Card style={{ height: '100%', width: '100%'}}>
     <MapContainer
             center={[50.450001, 30.523333]}
-            zoom={13}
+            zoom={15}
             scrollWheelZoom={true}
             style={{ width: '100%', height: '85vh' }}
         >
